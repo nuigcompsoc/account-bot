@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/nuigcompsoc/account-bot/issues"
   },
-  "homepage": "https://github.com/nuigcompsoc/account-bot#readme"
+  "homepage": "https://github.com/nuigcompsoc/account-bot#readme",
+  "dependencies": {
+    "discord.js": "^12.2.0",
+    "eslint": "^7.5.0"
+  }
 }
