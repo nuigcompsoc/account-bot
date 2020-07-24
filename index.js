@@ -5,4 +5,4 @@ client.once('ready', () => {
     console.log('Ready!');
 });
 
-client.login('');
+client.login(tokenfile[token]);
