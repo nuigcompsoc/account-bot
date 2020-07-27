@@ -1,8 +1,9 @@
-const {prefix, token, ldapConfig, ldapFunctions} = require('./config.json');
+const {prefix, token, ldapConfig, ldapFunctions, attributes} = require('./config.json');
 const {Client, RichEmbed} = require('discord.js');
-const bot = new Client;
 const ldap = require('ldapjs');
 const fs = require('fs');
+let messageFunctions = require('./messages.js');
+let bot = new Client;
 
 bot.once('ready', () => {
     console.log('Ready!');
@@ -16,15 +17,15 @@ let ldapClient = ldap.createClient({
     tlsOptions: {
         host: ldapConfig.tlsOptions.host,
         port: ldapConfig.tlsOptions.port,
-        ca: ldapConfig.tlsOptions.ca
+        ca: [fs.readFileSync(ldapConfig.tlsOptions.caPath)]
     }
 });
 
 function getUser(uid, mail) {
-    var searchOptions = {
+    let searchOptions = {
         scope: 'sub',
         filter: '(uid='+uid+')',
-        attributes: ['uid', 'mail']
+        attributes: ['dn', 'sn', 'cn', attributes.email, attributes.id, attributes.studentnum]
     }
 
     // client.bind sets up for authentication
@@ -38,7 +39,7 @@ function getUser(uid, mail) {
             console.log(err);
                 
         res.on('searchEntry', function (entry) {
-            console.log(entry.object.mail.toLowerCase() + " " + mail.toLowerCase());
+            console.log('entry: ' + JSON.stringify(entry.object));
             // If the member exists in ldap with UID, it will return true here.
             if (mail.toLowerCase() == entry.object.mail.toLowerCase()) return true;
             return false
@@ -47,13 +48,22 @@ function getUser(uid, mail) {
 }
 
 bot.on('message', message => {
-    //let args = message.content.substring(prefix.length).split(" ");
 
+    if (message.content.charAt(0) == '!' ) {
+
+        message.channel.send('Testing Bot is now Online, Greetings, ' + message.author.username);
+
+        let args = message.content.substring().split(" ");
+        console.log(args);
+        message.channel.send(messageFunctions.help(message.author.username));
+    }
+
+    /*
     if (message.content === '.on') {
         message.channel.send('Testing Bot is now Online, Greetings, ' + message.author.username);
         message.author.send('This works too!')
     }
-    /*switch (args[0]) {
+    switch (args[0]) {
         case 'requestaccount':
             const Embed = new RichEmbed()
             .setTitle('NUIG CompSoc Account Request')
