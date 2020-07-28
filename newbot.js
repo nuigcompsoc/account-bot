@@ -1,4 +1,4 @@
-const {prefix, token, ldapConfig, ldapFunctions, attributes} = require('./config.json');
+const {prefix, token, ldapConfig, ldapFunctions, attributes, botcommands, botsummons} = require('./config.json');
 const {Client, RichEmbed} = require('discord.js');
 const ldap = require('ldapjs');
 const fs = require('fs');
@@ -30,7 +30,8 @@ function getUser(uid, mail) {
 
     // client.bind sets up for authentication
     ldapClient.bind(ldapFunctions.bind, ldapFunctions.pw, function(err) {
-        if (err) console.log(err);
+        if (err) 
+            console.log(err);
     });
 
     // client search queries LDAP
@@ -40,24 +41,26 @@ function getUser(uid, mail) {
                 
         res.on('searchEntry', function (entry) {
             console.log('entry: ' + JSON.stringify(entry.object));
-            // If the member exists in ldap with UID, it will return true here.
-            if (mail.toLowerCase() == entry.object.mail.toLowerCase()) return true;
-            return false
         });
     });
 }
 
 bot.on('message', message => {
 
-    if (message.content.charAt(0) == '!' ) {
+    let msg = message.content.toLowerCase();
+    let user = message.author;
 
-        message.channel.send('Testing Bot is now Online, Greetings, ' + message.author.username);
+    if (msg.charAt(0) == prefix && !user.bot) {
+        
+        if (botsummons.some(v => msg.includes(v))) {
+            message.channel.send(messageFunctions.help(user.username));
+        }
 
-        let args = message.content.substring().split(" ");
-        console.log(args);
-        message.channel.send(messageFunctions.help(message.author.username));
+        if (msg.includes(botcommands[0])) {
+            // ask the user to pm their student number (or email?)
+            message.author.send(messageFunctions.checkIfAccount(user.username));
+        }
     }
-
     /*
     if (message.content === '.on') {
         message.channel.send('Testing Bot is now Online, Greetings, ' + message.author.username);
@@ -71,4 +74,5 @@ bot.on('message', message => {
             .setDescription('The following is how to setup an account with us!');
     }*/
 })
+
 
