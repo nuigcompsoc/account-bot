@@ -1,4 +1,4 @@
-const {prefix, token, ldapConfig, ldapFunctions, attributes, botcommands, botsummons} = require('../config.json');
+const {prefix, token, ldapConfig, ldapFunctions, attributes, botcommands, botsummons, testing} = require('../config.json');
 const {Client, RichEmbed} = require('discord.js');
 const ldap = require('ldapjs');
 const fs = require('fs');
@@ -7,7 +7,7 @@ let bot = new Client;
 
 bot.once('ready', () => {
     console.log('Ready!');
-    getUser('dav', 'd.noone5@nuigalway.ie');
+    getUser(testing[0], testing[1]);
 });
 
 bot.login(token);
@@ -64,7 +64,6 @@ bot.on('message', message => {
         if (msg.includes(botcommands[0])) {
             // ask the user to pm their student number (or email?)
             message.author.send(messageFunctions.checkIfAccount(user.username));
-            //getUser(user, 'dav', 'd.noone5@nuigalway.ie');
         }
     }
     /*

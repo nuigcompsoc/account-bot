@@ -1,4 +1,4 @@
-const {prefix, token, ldapConfig, ldapFunctions, attributes, botcommands, botsummons} = require('./config.json');
+const {prefix, token, ldapConfig, ldapFunctions, attributes, botcommands, botsummons, testing} = require('./config.json');
 const {Client, RichEmbed} = require('discord.js');
 const ldap = require('ldapjs');
 const fs = require('fs');
@@ -7,7 +7,10 @@ let bot = new Client;
 
 bot.once('ready', () => {
     console.log('Ready!');
-    getUser('dav', 'd.noone5@nuigalway.ie');
+<<<<<<< HEAD
+    getUser(testing[0], testing[1]);
+=======
+>>>>>>> 5d0187a9f441da4281ef9daadca5d2b9e3cc5717
 });
 
 bot.login(token);
@@ -42,10 +45,13 @@ function getUser(uid, mail) {
                 
         res.on('searchEntry', function (entry) {
             console.log('entry: ' + JSON.stringify(entry.object));
+<<<<<<< HEAD
             // If the member exists in ldap with UID, it will return true here.
             if (mail.toLowerCase() == entry.object.mail.toLowerCase()) 
                 return true;
             return false
+=======
+>>>>>>> 5d0187a9f441da4281ef9daadca5d2b9e3cc5717
         });
     });
 }
@@ -64,7 +70,10 @@ bot.on('message', message => {
         if (msg.includes(botcommands[0])) {
             // ask the user to pm their student number (or email?)
             message.author.send(messageFunctions.checkIfAccount(user.username));
+<<<<<<< HEAD
             //getUser(user, 'dav', 'd.noone5@nuigalway.ie');
+=======
+>>>>>>> 5d0187a9f441da4281ef9daadca5d2b9e3cc5717
         }
     }
     /*
