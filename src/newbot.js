@@ -1,5 +1,5 @@
 const {prefix, token, ldapConfig, ldapFunctions, attributes, botcommands, botsummons, testing} = require('../config.json');
-const {Client, RichEmbed} = require('discord.js');
+const {Client, RichEmbed, MessageCollector} = require('discord.js');
 const ldap = require('ldapjs');
 const fs = require('fs');
 let messageFunctions = require('./messages.js');
@@ -61,23 +61,58 @@ bot.on('message', message => {
             message.channel.send(messageFunctions.help(user.username));
         }
 
-        if (msg.includes(botcommands[0])) {
+        if (msg.includes(botcommands[0]) && message.channel.type != "dm") {
             // ask the user to pm their student number (or email?)
-            message.author.send(messageFunctions.checkIfAccount(user.username));
+            message.channel.send(messageFunctions.notInDM(user.username, botcommands[0]));
+        }
+        
+        if (msg.includes(botcommands[1]) && message.channel.type != "dm") {
+            // ask the user to pm their student number (or email?)
+            message.channel.send(messageFunctions.notInDM(user.username, botcommands[1]));
+        }
+
+    }
+});
+
+
+bot.on("message", async message => {
+
+    const applying = [];
+
+    if (message.author.bot) {
+        return;
+    }
+    if (message.channel.type === "dm") {
+        if (message.content.toLowerCase() === "!check") {
+            if (applying.includes(message.author.id)) return;
+        
+            try {
+                const collector = new MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 30000 });
+                console.log(`${message.author.tag} is checking to see if they have an account.`);
+                applying.push(message.author.id);
+                await message.channel.send(":pencil: Please enter your **student number** below: ");
+
+                collector.on('collect', message => {
+                    if (message.content == "test") {
+                        message.channel.send("Checking Now!");
+                    } else {
+                        message.channel.send("No account!");
+                        collector.stop();
+                    }
+                });
+                // can log to backend to see who is checking 
+                collector.on('end', collected => {
+                    console.log(`Collected ${collected.size} items`);
+                });
+                    
+            } 
+            catch(err) {
+                console.error(err);
+            }
+
+        
         }
     }
-    /*
-    if (message.content === '.on') {
-        message.channel.send('Testing Bot is now Online, Greetings, ' + message.author.username);
-        message.author.send('This works too!')
-    }
-    switch (args[0]) {
-        case 'requestaccount':
-            const Embed = new RichEmbed()
-            .setTitle('NUIG CompSoc Account Request')
-            .setColor(0x008080)
-            .setDescription('The following is how to setup an account with us!');
-    }*/
-})
 
+}); 
 
